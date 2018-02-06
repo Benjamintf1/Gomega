@@ -5,6 +5,7 @@ import (
 
 	"github.com/onsi/gomega/matchers"
 	"github.com/onsi/gomega/types"
+	"fmt"
 )
 
 //Equal uses reflect.DeepEqual to compare actual with expected.  Equal is strict about
@@ -214,6 +215,116 @@ func MatchJSON(json interface{}) types.GomegaMatcher {
 	}
 }
 
+//MatchUnorderedJson is for json with sets, or Unordered lists
+//If you want to have some lists enforce order, add keys exclusions using
+//Add WithOrderedListKeys( json keys that refer to unordered lists )
+// ie "key" assumes "key" : [list] is an ordered list
+func MatchUnorderedJSON(json interface{}, keys ...matchers.KeyExclusions) types.GomegaMatcher {
+	deepMatcher := matchers.UnmarshalledDeepMatcher{
+		Ordered: false,
+		Subset:  false,
+	}
+
+	if len(keys) > 0{
+		if len(keys) > 1 {
+			fmt.Errorf("Only 1 key exclusion set is currently supported")
+		} else if keys[0].IsOrdered(){
+			deepMatcher.InvertOrderingKeys = keys[0].GetMap()
+		} else {
+			fmt.Errorf("You are trying to set unordered list keys for unordered JSON")
+		}
+	}
+
+
+	return &matchers.ExpandedJsonMatcher{
+		JSONToMatch: json,
+		DeepMatcher: deepMatcher,
+	}
+}
+
+//MatchOrderedJSON is for matching json with some sets with the default assumption of order
+//This is just like the default match json.
+//If you want to have some lists be considered sets, add keys exclusions using
+//Add WithUnorderedListKeys( json keys that refer to unordered lists )
+func MatchOrderedJSON(json interface{}, keys ...matchers.KeyExclusions) types.GomegaMatcher {
+	deepMatcher := matchers.UnmarshalledDeepMatcher{
+		Ordered: true,
+		Subset:  false,
+	}
+
+	if len(keys) > 0{
+		if len(keys) > 1 {
+			fmt.Errorf("Only 1 key exclusion set is currently supported")
+		} else if keys[0].IsOrdered(){
+			fmt.Errorf("You are trying to set ordered list keys for ordered JSON")
+		} else {
+			deepMatcher.InvertOrderingKeys = keys[0].GetMap()
+		}
+	}
+
+
+	return &matchers.ExpandedJsonMatcher{
+		JSONToMatch: json,
+		DeepMatcher: deepMatcher,
+	}
+}
+
+//This is for json with Unordered lists ie [1,2,3] is equal to [2,3,1].
+//This also is a subset match rather then a full match ie [1,2,3] contains [1,2]
+//If you want to have some lists enforce order, add keys exclusions using
+//Add WithOrderedListKeys( json keys that refer to unordered lists )
+func ContainUnorderedJSON(json interface{}, keys ...matchers.KeyExclusions) types.GomegaMatcher {
+	deepMatcher := matchers.UnmarshalledDeepMatcher{
+		Ordered: false,
+		Subset:  true,
+	}
+
+	if len(keys) > 0{
+		if len(keys) > 1 {
+			fmt.Errorf("Only 1 key exclusion set is currently supported")
+		} else if keys[0].IsOrdered(){
+			deepMatcher.InvertOrderingKeys = keys[0].GetMap()
+		} else {
+			fmt.Errorf("You are trying to set unordered list keys for unordered JSON")
+		}
+	}
+
+
+	return &matchers.ExpandedJsonMatcher{
+		JSONToMatch: json,
+		DeepMatcher: deepMatcher,
+	}
+}
+
+
+//This is for json with Ordered lists ie [1,2,3] is not equal to [2,3,1].
+//This also is a subset match rather then a full match ie [1,2,3] contains [1,2]
+//If you want to have some lists enforce order, add keys exclusions using
+//Add WithUnorderedListKeys( json keys that refer to unordered lists )
+func ContainOrderedJSON(json interface{}, keys ...matchers.KeyExclusions) types.GomegaMatcher {
+	deepMatcher := matchers.UnmarshalledDeepMatcher{
+		Ordered: true,
+		Subset:  true,
+	}
+
+	if len(keys) > 0{
+		if len(keys) > 1 {
+			fmt.Errorf("Only 1 key exclusion set is currently supported")
+		} else if keys[0].IsOrdered(){
+			fmt.Errorf("You are trying to set ordered list keys for ordered JSON")
+		} else {
+			deepMatcher.InvertOrderingKeys = keys[0].GetMap()
+		}
+	}
+
+
+	return &matchers.ExpandedJsonMatcher{
+		JSONToMatch: json,
+		DeepMatcher: deepMatcher,
+	}
+}
+
+
 //MatchXML succeeds if actual is a string or stringer of XML that matches
 //the expected XML.  The XMLs are decoded and the resulting objects are compared via
 //reflect.DeepEqual so things like whitespaces shouldn't matter.
@@ -229,6 +340,115 @@ func MatchXML(xml interface{}) types.GomegaMatcher {
 func MatchYAML(yaml interface{}) types.GomegaMatcher {
 	return &matchers.MatchYAMLMatcher{
 		YAMLToMatch: yaml,
+	}
+}
+
+//MatchUnorderedYAML is for YAML with sets, or Unordered lists
+//If you want to have some lists enforce order, add keys exclusions using
+//Add WithOrderedListKeys( json keys that refer to unordered lists )
+// ie "key" assumes "key" : [list] is an ordered list
+func MatchUnorderedYAML(YAML interface{}, keys ...matchers.KeyExclusions) types.GomegaMatcher {
+	deepMatcher := matchers.UnmarshalledDeepMatcher{
+		Ordered: false,
+		Subset:  false,
+	}
+
+	if len(keys) > 0{
+		if len(keys) > 1 {
+			fmt.Errorf("Only 1 key exclusion set is currently supported")
+		} else if keys[0].IsOrdered(){
+			deepMatcher.InvertOrderingKeys = keys[0].GetMap()
+		} else {
+			fmt.Errorf("You are trying to set unordered list keys for unordered YAML")
+		}
+	}
+
+
+	return &matchers.ExpandedYAMLMatcher{
+		YAMLToMatch: YAML,
+		DeepMatcher: deepMatcher,
+	}
+}
+
+//MatchOrderedYAML is for matching yaml with some sets with the default assumption of order
+//This is just like the default match yaml.
+//If you want to have some lists be considered sets, add keys exclusions using
+//Add WithUnorderedListKeys( yaml keys that refer to unordered lists )
+func MatchOrderedYAML(YAML interface{}, keys ...matchers.KeyExclusions) types.GomegaMatcher {
+	deepMatcher := matchers.UnmarshalledDeepMatcher{
+		Ordered: true,
+		Subset:  false,
+	}
+
+	if len(keys) > 0{
+		if len(keys) > 1 {
+			fmt.Errorf("Only 1 key exclusion set is currently supported")
+		} else if keys[0].IsOrdered(){
+			fmt.Errorf("You are trying to set ordered list keys for ordered YAML")
+		} else {
+			deepMatcher.InvertOrderingKeys = keys[0].GetMap()
+		}
+	}
+
+
+	return &matchers.ExpandedYAMLMatcher{
+		YAMLToMatch: YAML,
+		DeepMatcher: deepMatcher,
+	}
+}
+
+//This is for yaml with Unordered lists ie [1,2,3] is equal to [2,3,1].
+//This also is a subset match rather then a full match ie [1,2,3] contains [1,2]
+//If you want to have some lists enforce order, add keys exclusions using
+//Add WithOrderedListKeys( yaml keys that refer to unordered lists )
+func ContainUnorderedYAML(YAML interface{}, keys ...matchers.KeyExclusions) types.GomegaMatcher {
+	deepMatcher := matchers.UnmarshalledDeepMatcher{
+		Ordered: false,
+		Subset:  true,
+	}
+
+	if len(keys) > 0{
+		if len(keys) > 1 {
+			fmt.Errorf("Only 1 key exclusion set is currently supported")
+		} else if keys[0].IsOrdered(){
+			deepMatcher.InvertOrderingKeys = keys[0].GetMap()
+		} else {
+			fmt.Errorf("You are trying to set unordered list keys for unordered YAML")
+		}
+	}
+
+
+	return &matchers.ExpandedYAMLMatcher{
+		YAMLToMatch: YAML,
+		DeepMatcher: deepMatcher,
+	}
+}
+
+//This is for yaml with Ordered lists ie [1,2,3] is not equal to [2,3,1].
+//This is just like the default match yaml.
+//This also is a subset match rather then a full match ie [1,2,3] contains [1,2]
+//If you want to have some lists enforce order, add keys exclusions using
+//Add WithUnorderedListKeys( YAML keys that refer to unordered lists )
+func ContainOrderedYAML(YAML interface{}, keys ...matchers.KeyExclusions) types.GomegaMatcher {
+	deepMatcher := matchers.UnmarshalledDeepMatcher{
+		Ordered: true,
+		Subset:  true,
+	}
+
+	if len(keys) > 0{
+		if len(keys) > 1 {
+			fmt.Errorf("Only 1 key exclusion set is currently supported")
+		} else if keys[0].IsOrdered(){
+			fmt.Errorf("You are trying to set ordered list keys for ordered YAML")
+		} else {
+			deepMatcher.InvertOrderingKeys = keys[0].GetMap()
+		}
+	}
+
+
+	return &matchers.ExpandedYAMLMatcher{
+		YAMLToMatch: YAML,
+		DeepMatcher: deepMatcher,
 	}
 }
 
@@ -424,4 +644,26 @@ func Not(matcher types.GomegaMatcher) types.GomegaMatcher {
 //And(), Or(), Not() and WithTransform() allow matchers to be composed into complex expressions.
 func WithTransform(transform interface{}, matcher types.GomegaMatcher) types.GomegaMatcher {
 	return matchers.NewWithTransformMatcher(transform, matcher)
+}
+
+//This is for use with MatchUnorderedJson and MatchUnorderedYAML to change default list vs set behavior
+func WithOrderedListKeys(keys ...string) matchers.OrderedKeys{
+	ok := matchers.NewOrderedKeys()
+
+	for _, v := range keys {
+		ok.Val[v] = true
+	}
+
+	return ok
+}
+
+//This is for use with MatchUnorderedJson and MatchUnorderedYAML to change default list vs set behavior
+func WithUnorderedListKeys(keys ...string) matchers.UnorderedKeys{
+	uk := matchers.NewUnorderedKeys()
+
+	for _, v := range keys {
+		uk.Val[v] = true
+	}
+
+	return uk
 }

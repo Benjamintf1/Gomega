@@ -1,4 +1,4 @@
-package unmarshalledmatchers
+package matchers
 
 import "reflect"
 
@@ -112,3 +112,43 @@ func (matcher *UnmarshalledDeepMatcher) deepEqualOrderedList(a interface{}, b in
 	return true, errorPath
 }
 
+type OrderedKeys struct {
+	Val map[string]bool
+}
+
+func NewOrderedKeys() OrderedKeys {
+	return OrderedKeys{
+		Val: make(map[string]bool),
+	}
+}
+
+func (k OrderedKeys) IsOrdered() bool {
+	return true;
+}
+
+func (k OrderedKeys) GetMap() map[string]bool {
+	return k.Val;
+}
+
+type UnorderedKeys struct {
+	Val map[string]bool
+}
+
+func NewUnorderedKeys() UnorderedKeys {
+	return UnorderedKeys{
+		Val: make(map[string]bool),
+	}
+}
+
+func (k UnorderedKeys) IsOrdered() bool {
+	return false;
+}
+
+func (k UnorderedKeys) GetMap() map[string]bool {
+	return k.Val;
+}
+
+type KeyExclusions interface {
+	IsOrdered() bool
+	GetMap() map[string]bool
+}

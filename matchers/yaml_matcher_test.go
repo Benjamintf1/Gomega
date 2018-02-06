@@ -1,9 +1,9 @@
-package unmarshalledmatchers_test
+package matchers_test
 
 import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	. "github.com/Benjamintf1/ExpandedUnmarshalledMatchers"
+	. "github.com/onsi/gomega/matchers"
 )
 
 var _ = Describe("ExpandedYAMLMatcher", func() {

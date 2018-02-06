@@ -1,9 +1,7 @@
-package unmarshalledmatchers
+package matchers
 
 import (
 	"fmt"
-	"strings"
-
 	"github.com/onsi/gomega/format"
 	"gopkg.in/yaml.v2"
 )
@@ -48,19 +46,6 @@ func (matcher *ExpandedYAMLMatcher) NegatedFailureMessage(actual interface{}) (m
 func (matcher *ExpandedYAMLMatcher) toNormalisedStrings(actual interface{}) (actualFormatted, expectedFormatted string, err error) {
 	actualString, expectedString, err := matcher.toStrings(actual)
 	return normalise(actualString), normalise(expectedString), err
-}
-
-func normalise(input string) string {
-	var val interface{}
-	err := yaml.Unmarshal([]byte(input), &val)
-	if err != nil {
-		panic(err) // guarded by Match
-	}
-	output, err := yaml.Marshal(val)
-	if err != nil {
-		panic(err) // guarded by Unmarshal
-	}
-	return strings.TrimSpace(string(output))
 }
 
 func (matcher *ExpandedYAMLMatcher) toStrings(actual interface{}) (actualFormatted, expectedFormatted string, err error) {
