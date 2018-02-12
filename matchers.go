@@ -5,7 +5,6 @@ import (
 
 	"github.com/onsi/gomega/matchers"
 	"github.com/onsi/gomega/types"
-	"fmt"
 )
 
 //Equal uses reflect.DeepEqual to compare actual with expected.  Equal is strict about
@@ -227,11 +226,11 @@ func MatchUnorderedJSON(json interface{}, keys ...matchers.KeyExclusions) types.
 
 	if len(keys) > 0{
 		if len(keys) > 1 {
-			fmt.Errorf("Only 1 key exclusion set is currently supported")
+			panic("Only 1 key exclusion set is currently supported")
 		} else if keys[0].IsOrdered(){
 			deepMatcher.InvertOrderingKeys = keys[0].GetMap()
 		} else {
-			fmt.Errorf("You are trying to set unordered list keys for unordered JSON")
+			panic("You are trying to set unordered list keys for unordered JSON")
 		}
 	}
 
@@ -254,9 +253,9 @@ func MatchOrderedJSON(json interface{}, keys ...matchers.KeyExclusions) types.Go
 
 	if len(keys) > 0{
 		if len(keys) > 1 {
-			fmt.Errorf("Only 1 key exclusion set is currently supported")
+			panic("Only 1 key exclusion set is currently supported")
 		} else if keys[0].IsOrdered(){
-			fmt.Errorf("You are trying to set ordered list keys for ordered JSON")
+			panic("You are trying to set ordered list keys for ordered JSON")
 		} else {
 			deepMatcher.InvertOrderingKeys = keys[0].GetMap()
 		}
@@ -281,11 +280,11 @@ func ContainUnorderedJSON(json interface{}, keys ...matchers.KeyExclusions) type
 
 	if len(keys) > 0{
 		if len(keys) > 1 {
-			fmt.Errorf("Only 1 key exclusion set is currently supported")
+			panic("Only 1 key exclusion set is currently supported")
 		} else if keys[0].IsOrdered(){
 			deepMatcher.InvertOrderingKeys = keys[0].GetMap()
 		} else {
-			fmt.Errorf("You are trying to set unordered list keys for unordered JSON")
+			panic("You are trying to set unordered list keys for unordered JSON")
 		}
 	}
 
@@ -309,9 +308,9 @@ func ContainOrderedJSON(json interface{}, keys ...matchers.KeyExclusions) types.
 
 	if len(keys) > 0{
 		if len(keys) > 1 {
-			fmt.Errorf("Only 1 key exclusion set is currently supported")
+			panic("Only 1 key exclusion set is currently supported")
 		} else if keys[0].IsOrdered(){
-			fmt.Errorf("You are trying to set ordered list keys for ordered JSON")
+			panic("You are trying to set ordered list keys for ordered JSON")
 		} else {
 			deepMatcher.InvertOrderingKeys = keys[0].GetMap()
 		}
@@ -355,11 +354,11 @@ func MatchUnorderedYAML(YAML interface{}, keys ...matchers.KeyExclusions) types.
 
 	if len(keys) > 0{
 		if len(keys) > 1 {
-			fmt.Errorf("Only 1 key exclusion set is currently supported")
+			panic("Only 1 key exclusion set is currently supported")
 		} else if keys[0].IsOrdered(){
 			deepMatcher.InvertOrderingKeys = keys[0].GetMap()
 		} else {
-			fmt.Errorf("You are trying to set unordered list keys for unordered YAML")
+			panic("You are trying to set unordered list keys for unordered YAML")
 		}
 	}
 
@@ -382,9 +381,9 @@ func MatchOrderedYAML(YAML interface{}, keys ...matchers.KeyExclusions) types.Go
 
 	if len(keys) > 0{
 		if len(keys) > 1 {
-			fmt.Errorf("Only 1 key exclusion set is currently supported")
+			panic("Only 1 key exclusion set is currently supported")
 		} else if keys[0].IsOrdered(){
-			fmt.Errorf("You are trying to set ordered list keys for ordered YAML")
+			panic("You are trying to set ordered list keys for ordered YAML")
 		} else {
 			deepMatcher.InvertOrderingKeys = keys[0].GetMap()
 		}
@@ -409,11 +408,11 @@ func ContainUnorderedYAML(YAML interface{}, keys ...matchers.KeyExclusions) type
 
 	if len(keys) > 0{
 		if len(keys) > 1 {
-			fmt.Errorf("Only 1 key exclusion set is currently supported")
+			panic("Only 1 key exclusion set is currently supported")
 		} else if keys[0].IsOrdered(){
 			deepMatcher.InvertOrderingKeys = keys[0].GetMap()
 		} else {
-			fmt.Errorf("You are trying to set unordered list keys for unordered YAML")
+			panic("You are trying to set unordered list keys for unordered YAML")
 		}
 	}
 
@@ -437,9 +436,9 @@ func ContainOrderedYAML(YAML interface{}, keys ...matchers.KeyExclusions) types.
 
 	if len(keys) > 0{
 		if len(keys) > 1 {
-			fmt.Errorf("Only 1 key exclusion set is currently supported")
+			panic("Only 1 key exclusion set is currently supported")
 		} else if keys[0].IsOrdered(){
-			fmt.Errorf("You are trying to set ordered list keys for ordered YAML")
+			panic("You are trying to set ordered list keys for ordered YAML")
 		} else {
 			deepMatcher.InvertOrderingKeys = keys[0].GetMap()
 		}
