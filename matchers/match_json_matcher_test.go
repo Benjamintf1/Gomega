@@ -31,6 +31,15 @@ var _ = Describe("MatchJSONMatcher", func() {
 		})
 	})
 
+	Context("SubsetMatching", func() {
+		It("should succeed if the JSON is contained", func() {
+			Ω(`{"a":[1,2,3],"b":[1,2,3],"c":[1,2,3]}`).Should(ContainJSON(`{"b":[1,2,3]}`))
+			Ω(`{"a":[1,2,3],"b":[1,2,3],"c":[1,2,3]}`).ShouldNot(ContainJSON(`{"b":[3,2,1]}`))
+			Ω(`{"a":[1,2,3],"b":[1,2,3],"c":[1,2,3]}`).Should(ContainJSON(`{"a":[3,2,1],"b":[1,2,3]}`, "a"))
+
+		})
+	})
+
 	Context("when a key mismatch is found", func() {
 		It("reports the first found mismatch", func() {
 			subject := MatchJSONMatcher{JSONToMatch: `5`}

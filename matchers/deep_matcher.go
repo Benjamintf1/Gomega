@@ -1,19 +1,20 @@
 package matchers
 
-import "reflect"
+import (
+	"reflect"
+)
 
-type UnmarshalledDeepMatcher struct {
-	Ordered            bool
+type DeepMatcher struct {
 	InvertOrderingKeys map[string]bool
 	Subset             bool
 }
 
-func (matcher *UnmarshalledDeepMatcher) deepEqual(a interface{}, b interface{}) (bool, []interface{}){
+func (matcher *DeepMatcher) deepEqual(a interface{}, b interface{}) (bool, []interface{}){
 	return matcher.deepEqualRecursive(a, b, false)
 }
 
 
-func (matcher *UnmarshalledDeepMatcher) deepEqualRecursive(a interface{}, b interface{}, invertOrdering bool) (bool, []interface{}) {
+func (matcher *DeepMatcher) deepEqualRecursive(a interface{}, b interface{}, listIsSet bool) (bool, []interface{}) {
 	var errorPath []interface{}
 	if reflect.TypeOf(a) != reflect.TypeOf(b) {
 		return false, errorPath
@@ -21,10 +22,10 @@ func (matcher *UnmarshalledDeepMatcher) deepEqualRecursive(a interface{}, b inte
 
 	switch a.(type) {
 	case []interface{}:
-		if (matcher.Ordered && !invertOrdering) || (!matcher.Ordered && invertOrdering){
-			return matcher.deepEqualOrderedList(a, b, errorPath)
-		} else {
+		if listIsSet {
 			return matcher.deepEqualUnorderedList(a, b, errorPath)
+		} else {
+			return matcher.deepEqualOrderedList(a, b, errorPath)
 		}
 	case map[string]interface{}:
 		return matcher.deepEqualMap(a, b, errorPath)
@@ -33,7 +34,7 @@ func (matcher *UnmarshalledDeepMatcher) deepEqualRecursive(a interface{}, b inte
 	}
 }
 
-func (matcher *UnmarshalledDeepMatcher) deepEqualMap(a interface{}, b interface{}, errorPath []interface{}) (bool, []interface{}) {
+func (matcher *DeepMatcher) deepEqualMap(a interface{}, b interface{}, errorPath []interface{}) (bool, []interface{}) {
 	if matcher.Subset {
 		if len(a.(map[string]interface{})) > len(b.(map[string]interface{})) {
 			return false, errorPath
@@ -58,7 +59,7 @@ func (matcher *UnmarshalledDeepMatcher) deepEqualMap(a interface{}, b interface{
 	return true, errorPath
 }
 
-func (matcher *UnmarshalledDeepMatcher) deepEqualUnorderedList(a interface{}, b interface{}, errorPath []interface{}) (bool, []interface{}) {
+func (matcher *DeepMatcher) deepEqualUnorderedList(a interface{}, b interface{}, errorPath []interface{}) (bool, []interface{}) {
 	matched := make([]bool, len(b.([]interface{})))
 
 	if matcher.Subset {
@@ -92,7 +93,7 @@ func (matcher *UnmarshalledDeepMatcher) deepEqualUnorderedList(a interface{}, b 
 	return true, errorPath
 }
 
-func (matcher *UnmarshalledDeepMatcher) deepEqualOrderedList(a interface{}, b interface{}, errorPath []interface{}) (bool, []interface{}) {
+func (matcher *DeepMatcher) deepEqualOrderedList(a interface{}, b interface{}, errorPath []interface{}) (bool, []interface{}) {
 	if matcher.Subset {
 		if len(a.([]interface{})) > len(b.([]interface{})) {
 			return false, errorPath
@@ -112,43 +113,17 @@ func (matcher *UnmarshalledDeepMatcher) deepEqualOrderedList(a interface{}, b in
 	return true, errorPath
 }
 
-type OrderedKeys struct {
-	Val map[string]bool
-}
-
-func NewOrderedKeys() OrderedKeys {
-	return OrderedKeys{
-		Val: make(map[string]bool),
-	}
-}
-
-func (k OrderedKeys) IsOrdered() bool {
-	return true;
-}
-
-func (k OrderedKeys) GetMap() map[string]bool {
-	return k.Val;
-}
-
-type UnorderedKeys struct {
-	Val map[string]bool
-}
-
-func NewUnorderedKeys() UnorderedKeys {
-	return UnorderedKeys{
-		Val: make(map[string]bool),
-	}
-}
-
-func (k UnorderedKeys) IsOrdered() bool {
-	return false;
-}
-
-func (k UnorderedKeys) GetMap() map[string]bool {
-	return k.Val;
-}
-
 type KeyExclusions interface {
 	IsOrdered() bool
 	GetMap() map[string]bool
+}
+
+func ToMap(keys []string) map[string]bool {
+	setKeys := make(map[string]bool)
+
+	for _, v := range keys {
+		setKeys[v] = true
+	}
+
+	return setKeys
 }

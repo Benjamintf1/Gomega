@@ -13,6 +13,7 @@ import (
 type MatchJSONMatcher struct {
 	JSONToMatch      interface{}
 	firstFailurePath []interface{}
+	DeepMatcher      DeepMatcher
 }
 
 func (matcher *MatchJSONMatcher) Match(actual interface{}) (success bool, err error) {
@@ -28,7 +29,7 @@ func (matcher *MatchJSONMatcher) Match(actual interface{}) (success bool, err er
 	json.Unmarshal([]byte(actualString), &aval)
 	json.Unmarshal([]byte(expectedString), &eval)
 	var equal bool
-	equal, matcher.firstFailurePath = deepEqual(aval, eval)
+	equal, matcher.firstFailurePath = matcher.DeepMatcher.deepEqual(eval, aval)
 	return equal, nil
 }
 
