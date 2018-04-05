@@ -5,16 +5,16 @@ import (
 )
 
 type DeepMatcher struct {
-	InvertOrderingKeys map[string]bool
-	Subset             bool
+	listsAsSets bool
+	Subset      bool
 }
 
 func (matcher *DeepMatcher) deepEqual(a interface{}, b interface{}) (bool, []interface{}){
-	return matcher.deepEqualRecursive(a, b, false)
+	return matcher.deepEqualRecursive(a, b)
 }
 
 
-func (matcher *DeepMatcher) deepEqualRecursive(a interface{}, b interface{}, listIsSet bool) (bool, []interface{}) {
+func (matcher *DeepMatcher) deepEqualRecursive(a interface{}, b interface{}) (bool, []interface{}) {
 	var errorPath []interface{}
 	if reflect.TypeOf(a) != reflect.TypeOf(b) {
 		return false, errorPath
@@ -22,7 +22,7 @@ func (matcher *DeepMatcher) deepEqualRecursive(a interface{}, b interface{}, lis
 
 	switch a.(type) {
 	case []interface{}:
-		if listIsSet {
+		if matcher.listsAsSets {
 			return matcher.deepEqualUnorderedList(a, b, errorPath)
 		} else {
 			return matcher.deepEqualOrderedList(a, b, errorPath)
@@ -51,7 +51,7 @@ func (matcher *DeepMatcher) deepEqualMap(a interface{}, b interface{}, errorPath
 			return false, errorPath
 		}
 
-		elementEqual, keyPath := matcher.deepEqualRecursive(v1, v2, matcher.InvertOrderingKeys[k])
+		elementEqual, keyPath := matcher.deepEqualRecursive(v1, v2)
 		if !elementEqual {
 			return false, append(keyPath, k)
 		}
@@ -78,7 +78,7 @@ func (matcher *DeepMatcher) deepEqualUnorderedList(a interface{}, b interface{},
 			if matched[j] {
 				continue
 			}
-			elementEqual, _ := matcher.deepEqualRecursive(v1, v2, false)
+			elementEqual, _ := matcher.deepEqualRecursive(v1, v2)
 			if elementEqual {
 				foundMatch = true
 				matched[j] = true
@@ -105,25 +105,10 @@ func (matcher *DeepMatcher) deepEqualOrderedList(a interface{}, b interface{}, e
 	}
 
 	for i, v := range a.([]interface{}) {
-		elementEqual, keyPath := matcher.deepEqualRecursive(v, b.([]interface{})[i], false)
+		elementEqual, keyPath := matcher.deepEqualRecursive(v, b.([]interface{})[i])
 		if !elementEqual {
 			return false, append(keyPath, i)
 		}
 	}
 	return true, errorPath
-}
-
-type KeyExclusions interface {
-	IsOrdered() bool
-	GetMap() map[string]bool
-}
-
-func ToMap(keys []string) map[string]bool {
-	setKeys := make(map[string]bool)
-
-	for _, v := range keys {
-		setKeys[v] = true
-	}
-
-	return setKeys
 }

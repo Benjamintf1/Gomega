@@ -208,12 +208,9 @@ func HaveSuffix(suffix string, args ...interface{}) types.GomegaMatcher {
 //MatchJSON succeeds if actual is a string or stringer of JSON that matches
 //the expected JSON.  The JSONs are decoded and the resulting objects are compared via
 //reflect.DeepEqual so things like key-ordering and whitespace shouldn't matter.
-//To ignore order of certain lists ie. { "a": [1,2,3] } = { "a": [2,3,1] }
-//pass "a" in listsAsSets
-func MatchJSON(json interface{}, listsAsSets ...string) types.GomegaMatcher {
+func MatchJSON(json interface{}) types.GomegaMatcher {
 	deepMatcher := matchers.DeepMatcher{
 		Subset:  false,
-		InvertOrderingKeys: matchers.ToMap(listsAsSets),
 	}
 	return &matchers.MatchJSONMatcher{
 		JSONToMatch: json,
@@ -224,12 +221,9 @@ func MatchJSON(json interface{}, listsAsSets ...string) types.GomegaMatcher {
 //ContainJSON succeeds if actual is a string or stringer of JSON that is a subset
 //the expected JSON.  The JSONs are decoded and the resulting objects are compared via
 //reflect.DeepEqual so things like key-ordering and whitespace shouldn't matter.
-//To ignore order of certain lists ie. { "a": [1,2,3] } = { "a": [2,3,1] }
-//pass "a" in listsAsSets
-func ContainJSON(json interface{}, listsAsSets ...string) types.GomegaMatcher {
+func ContainJSON(json interface{}) types.GomegaMatcher {
 	deepMatcher := matchers.DeepMatcher{
 		Subset:  true,
-		InvertOrderingKeys: matchers.ToMap(listsAsSets),
 	}
 	return &matchers.MatchJSONMatcher{
 		JSONToMatch: json,
